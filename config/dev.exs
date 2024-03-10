@@ -2,13 +2,14 @@ import Config
 
 # Configure your database
 config :civics, Civics.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
-  database: "civics_dev",
+  database: Path.expand("../civics_dev.db", Path.dirname(__ENV__.file)),
+  pool_size: 5,
   stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  load_extensions: [
+    # DEV SPECIFIC mod_spatialite.dylib is macos only
+    "/opt/homebrew/Cellar/libspatialite/5.1.0/lib/mod_spatialite.dylib"
+  ],
+  show_sensitive_data_on_connection_error: true
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
