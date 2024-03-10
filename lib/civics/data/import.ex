@@ -111,6 +111,32 @@ defmodule Civics.Data.Import do
         |> Repo.transaction()
     end)
     |> Stream.run()
+
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      INSERT INTO assessments_fts (rowid, tax_key, full_address)
+      SELECT a.id, a.tax_key,
+      house_number_low || ' ' || house_number_high || ' ' || coalesce(street_direction, '') || ' ' || coalesce(street, '') || ' ' || coalesce(street_type, '') || ' ' || coalesce(
+      CASE street_type
+      WHEN 'AV' THEN 'AVENUE AVE'
+      WHEN 'BL' THEN 'BOULEVARD BLVD'
+      WHEN 'LA' THEN 'LANE LN'
+      WHEN 'ST' THEN 'STREET STR'
+      WHEN 'DR' THEN 'DRIVE'
+      WHEN 'RD' THEN 'ROAD RD'
+      WHEN 'CT' THEN 'CRT COURT CT'
+      WHEN 'TR' THEN 'TERRACE TR'
+      WHEN 'PK' THEN 'PARKWAY PKWY'
+      WHEN 'CR' THEN 'CIRCLE CIR CR'
+      WHEN 'WA' THEN 'WAY WY'
+      WHEN 'PL' THEN 'PLACE'
+      ELSE ''
+      END
+      , '')
+      FROM assessments a
+      """
+    )
   end
 
   # ogr2ogr -f GeoJSON -s_srs ParcelPolygonTax.prj -t_srs EPSG:4326 assessment_shapefiles.geojson ParcelPolygonTax.shp
@@ -159,13 +185,20 @@ defmodule Civics.Data.Import do
       }
     end)
     |> Stream.chunk_every(200)
-    |> Task.async_stream(fn assessments ->
+    |> Stream.each(fn assessments ->
       {:ok, _} =
         Ecto.Multi.new()
         |> Ecto.Multi.insert_all(:insert_all, AssessmentShapefile, assessments)
         |> Repo.transaction()
     end)
     |> Stream.run()
+
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      update assessment_shapefiles SET geom_point = ST_Centroid(geom);
+      """
+    )
   end
 
   defp convert_string_maybe_blank_to_date(""), do: nil
