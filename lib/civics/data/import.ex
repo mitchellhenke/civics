@@ -139,28 +139,17 @@ defmodule Civics.Data.Import do
     )
   end
 
-  # ogr2ogr -f GeoJSON -s_srs ParcelPolygonTax.prj -t_srs EPSG:4326 assessment_shapefiles.geojson ParcelPolygonTax.shp
   def assessment_shapefiles(download \\ false) do
+    if download do
+      {_, 0} =
+        Path.join(:code.priv_dir(:civics), "download_shapefiles.sh")
+        |> System.cmd([])
+    end
+
     assessments =
-      if download do
-        response =
-          Finch.build(:get, @mprop_download_url)
-          |> Finch.request!(Civics.Finch)
-
-        {"location", download} = List.keyfind(response.headers, "location", 0)
-
-        download_response =
-          Finch.build(:get, download)
-          |> Finch.request!(Civics.Finch)
-
-        download_response.body
-        |> String.trim()
-        |> String.split("\r")
-      else
-        File.read!(Path.join("data", "assessment_shapefiles.geojson"))
-        |> Jason.decode!()
-        |> Map.fetch!("features")
-      end
+      File.read!(Path.join("data", "assessment_shapefiles.geojson"))
+      |> Jason.decode!()
+      |> Map.fetch!("features")
 
     assessments
     |> Stream.filter(fn assessment ->
