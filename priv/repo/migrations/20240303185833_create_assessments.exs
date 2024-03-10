@@ -106,5 +106,3 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
     )
   end
 end
-
-# .load /opt/homebrew/lib/mod_spatialite.dylib

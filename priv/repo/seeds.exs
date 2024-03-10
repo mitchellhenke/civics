@@ -12,5 +12,5 @@
 
 Logger.configure(level: :warning)
 Civics.Data.Import.assessments()
-Logger.configure(level: :debug)
 Civics.Data.Import.assessment_shapefiles()
+Logger.configure(level: :debug)
