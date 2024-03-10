@@ -144,24 +144,20 @@ defmodule Civics.Data.Import do
       tax_key = get_in(assessment, ["properties", "Taxkey"])
       geometry = Geo.JSON.decode!(Map.fetch!(assessment, "geometry"))
 
-      geometry = case geometry do
-        %Geo.Polygon{} ->
-          %Geo.MultiPolygon{coordinates: [geometry.coordinates]}
-        %Geo.MultiPolygon{} ->
-          IO.inspect(tax_key)
-          geometry
-      end
+      geometry =
+        case geometry do
+          %Geo.Polygon{} ->
+            %Geo.MultiPolygon{coordinates: [geometry.coordinates]}
+
+          %Geo.MultiPolygon{} ->
+            geometry
+        end
 
       %{
         tax_key: tax_key,
-        geom: %{ geometry | srid: 4326 }
+        geom: %{geometry | srid: 4326}
       }
     end)
-    # |> Stream.each(fn assessment ->
-    #   AssessmentShapefile.changeset(%AssessmentShapefile{}, assessment)
-    #   |> Repo.insert!
-    #   |> IO.inspect
-    # end)
     |> Stream.chunk_every(200)
     |> Task.async_stream(fn assessments ->
       {:ok, _} =
