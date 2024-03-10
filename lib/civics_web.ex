@@ -84,6 +84,7 @@ defmodule CivicsWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import CivicsWeb.CoreComponents
+      import CivicsWeb.Helpers
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

@@ -18,6 +18,8 @@ defmodule CivicsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/assessments", AssessmentLive.Index, :index
+    live "/assessments/:id", AssessmentLive.Show, :show
   end
 
   # Other scopes may use custom stacks.

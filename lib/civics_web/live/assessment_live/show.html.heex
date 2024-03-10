@@ -1,0 +1,74 @@
+<.header>
+  Assessment <%= @assessment.id %>
+  <:subtitle>This is a assessment record from your database.</:subtitle>
+</.header>
+
+<.list>
+  <:item title="Tax key"><%= @assessment.tax_key %></:item>
+  <:item title="Tax rate cd"><%= @assessment.tax_rate_cd %></:item>
+  <:item title="House number high"><%= @assessment.house_number_high %></:item>
+  <:item title="House number low"><%= @assessment.house_number_low %></:item>
+  <:item title="House number suffix"><%= @assessment.house_number_suffix %></:item>
+  <:item title="Street direction"><%= @assessment.street_direction %></:item>
+  <:item title="Street"><%= @assessment.street %></:item>
+  <:item title="Street type"><%= @assessment.street_type %></:item>
+  <:item title="Year"><%= @assessment.year %></:item>
+  <:item title="Assessed land"><%= @assessment.assessed_land %></:item>
+  <:item title="Assessed improvements"><%= @assessment.assessed_improvements %></:item>
+  <:item title="Assessed total"><%= @assessment.assessed_total %></:item>
+  <:item title="Assessed land exempt"><%= @assessment.assessed_land_exempt %></:item>
+  <:item title="Assessed improvements exempt">
+    <%= @assessment.assessed_improvements_exempt %>
+  </:item>
+  <:item title="Assessed total exempt"><%= @assessment.assessed_total_exempt %></:item>
+  <:item title="Exemption code"><%= @assessment.exemption_code %></:item>
+  <:item title="Building area"><%= @assessment.building_area %></:item>
+  <:item title="Year built"><%= @assessment.year_built %></:item>
+  <:item title="Number of bedrooms"><%= @assessment.number_of_bedrooms %></:item>
+  <:item title="Number of bathrooms"><%= @assessment.number_of_bathrooms %></:item>
+  <:item title="Number of powder rooms"><%= @assessment.number_of_powder_rooms %></:item>
+  <:item title="Lot area"><%= @assessment.lot_area %></:item>
+  <:item title="Zoning"><%= @assessment.zoning %></:item>
+  <:item title="Building type"><%= @assessment.building_type %></:item>
+  <:item title="Zip code"><%= @assessment.zip_code %></:item>
+  <:item title="Land use"><%= @assessment.land_use %></:item>
+  <:item title="Land use general"><%= @assessment.land_use_general %></:item>
+  <:item title="Fireplace"><%= @assessment.fireplace %></:item>
+  <:item title="Air conditioning"><%= @assessment.air_conditioning %></:item>
+  <:item title="Parking type"><%= @assessment.parking_type %></:item>
+  <:item title="Number units"><%= @assessment.number_units %></:item>
+  <:item title="Number stories"><%= @assessment.number_stories %></:item>
+  <:item title="Attic"><%= @assessment.attic %></:item>
+  <:item title="Basement"><%= @assessment.basement %></:item>
+  <:item title="Neighborhood"><%= @assessment.neighborhood %></:item>
+  <:item title="Tract"><%= @assessment.tract %></:item>
+  <:item title="Block"><%= @assessment.block %></:item>
+  <:item title="Alder"><%= @assessment.alder %></:item>
+  <:item title="Convey date"><%= @assessment.convey_date %></:item>
+  <:item title="Convey type"><%= @assessment.convey_type %></:item>
+  <:item title="Owner name 1"><%= @assessment.owner_name_1 %></:item>
+  <:item title="Owner name 2"><%= @assessment.owner_name_2 %></:item>
+  <:item title="Owner name 3"><%= @assessment.owner_name_3 %></:item>
+  <:item title="Owner mail address"><%= @assessment.owner_mail_address %></:item>
+  <:item title="Owner city state"><%= @assessment.owner_city_state %></:item>
+  <:item title="Owner zip code"><%= @assessment.owner_zip_code %></:item>
+  <:item title="Owner occupied"><%= @assessment.owner_occupied %></:item>
+</.list>
+
+<.back navigate={~p"/assessments"}>Back to assessments</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="assessment-modal"
+  show
+  on_cancel={JS.patch(~p"/assessments/#{@assessment}")}
+>
+  <.live_component
+    module={CivicsWeb.AssessmentLive.FormComponent}
+    id={@assessment.id}
+    title={@page_title}
+    action={@live_action}
+    assessment={@assessment}
+    patch={~p"/assessments/#{@assessment}"}
+  />
+</.modal>

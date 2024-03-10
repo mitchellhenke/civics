@@ -156,8 +156,7 @@ defmodule CivicsWeb.CoreComponents do
         phx-connected={hide("#client-error")}
         hidden
       >
-        Attempting to reconnect
-        <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
+        Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
       </.flash>
 
       <.flash
@@ -462,6 +461,7 @@ defmodule CivicsWeb.CoreComponents do
 
   slot :col, required: true do
     attr :label, :string
+    attr :class, :string
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column"
@@ -543,6 +543,27 @@ defmodule CivicsWeb.CoreComponents do
         </div>
       </dl>
     </div>
+    """
+  end
+
+  @doc """
+  Renders a link that doesn't look like regular text.
+
+  ## Examples
+
+      <.back navigate={~p"/posts"}>Back to posts</.back>
+  """
+  attr :navigate, :any, required: true
+  slot :inner_block, required: true
+
+  def good_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@navigate}
+      class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+    >
+      <%= render_slot(@inner_block) %>
+    </.link>
     """
   end
 
