@@ -9,3 +9,8 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+Logger.configure(level: :warning)
+Civics.Data.Import.assessments()
+Logger.configure(level: :debug)
+Civics.Data.Import.assessment_shapefiles()

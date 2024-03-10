@@ -96,6 +96,14 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
       """
       """
     )
+
+    execute(
+      """
+      SELECT CreateSpatialIndex('assessment_shapefiles', 'geom_point');
+      """,
+      """
+      """
+    )
   end
 end
 

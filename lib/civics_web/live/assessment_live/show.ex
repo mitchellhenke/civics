@@ -13,7 +13,7 @@ defmodule CivicsWeb.AssessmentLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:assessment, Properties.get_assessment!(id))}
+     |> assign(:assessment, Properties.get_assessment_by_tax_key!(id))}
   end
 
   defp page_title(:show), do: "Show Assessment"

@@ -37,6 +37,7 @@ defmodule Civics.Properties do
 
   """
   def get_assessment!(id), do: Repo.get!(Assessment, id)
+  def get_assessment_by_tax_key!(tax_key), do: Repo.get_by!(Assessment, tax_key: tax_key)
 
   def search_assessments(address_query) do
     formatted_query = format_query(address_query)
