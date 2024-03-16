@@ -4,4 +4,6 @@ cd data/
 mkdir shapefiles
 unzip -o -d shapefiles shapefiles.zip
 cd shapefiles
-ogr2ogr -f GeoJSON -s_srs ParcelPolygonTax.prj -t_srs EPSG:4326 ../assessment_shapefiles.geojson ParcelPolygonTax.shp
+ogr2ogr -f GeoJSON -s_srs ParcelPolygonTax.prj -t_srs EPSG:4326 ../raw_assessment_shapefiles.geojson ParcelPolygonTax.shp
+
+cat ../raw_assessment_shapefiles.geojson | jq -c '.features |= map({type: .type, properties: {Taxkey: .properties.Taxkey}, geometry: .geometry})' | gzip > ../assessment_shapefiles.geojson.gz

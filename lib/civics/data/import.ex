@@ -139,15 +139,21 @@ defmodule Civics.Data.Import do
     )
   end
 
-  def assessment_shapefiles(download \\ false) do
-    if download do
-      {_, 0} =
-        Path.join(:code.priv_dir(:civics), "download_shapefiles.sh")
-        |> System.cmd([])
-    end
+  def assessment_shapefiles(opts \\ []) do
+    download_path = Keyword.get(opts, :download_path, false)
+    gunzip = Keyword.get(opts, :gunzip, false)
+    file_path = Keyword.get(opts, :file_path, false)
 
     assessments =
-      File.read!(Path.join("data", "assessment_shapefiles.geojson"))
+      if download_path do
+        response =
+          Finch.build(:get, download_path)
+          |> Finch.request!(Civics.Finch)
+
+        response.body
+      else
+        File.read!(file_path)
+      end
       |> Jason.decode!()
       |> Map.fetch!("features")
 
@@ -195,6 +201,12 @@ defmodule Civics.Data.Import do
   defp convert_string_maybe_blank_to_date(string_date) do
     NaiveDateTime.from_iso8601!(string_date)
     |> NaiveDateTime.to_date()
+  end
+
+  defp convert_string_maybe_blank_to_integer(""), do: nil
+
+  defp convert_string_maybe_blank_to_integer(string_number) do
+    String.to_integer(string_number)
   end
 
   defp convert_string_maybe_blank_to_float(""), do: nil
