@@ -12,5 +12,9 @@
 
 Logger.configure(level: :warning)
 Civics.Data.Import.assessments()
-Civics.Data.Import.assessment_shapefiles()
+
+Civics.Data.Import.assessment_shapefiles(
+  file_path: Path.join("data", "assessment_shapefiles.geojson")
+)
+
 Logger.configure(level: :debug)

@@ -1,0 +1,38 @@
+# fly.toml app configuration file generated for civics on 2024-03-11T21:36:54-05:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'civics'
+primary_region = 'ord'
+kill_signal = 'SIGTERM'
+
+[build]
+
+[env]
+  DATABASE_PATH = '/mnt/civics_db/civics_db.db'
+  DOWNLOAD_PATH = '/mnt/civics_db/tmp'
+  PHX_HOST = 'civics.fly.dev'
+  PORT = '8080'
+
+[mounts]
+  source = 'civics_db'
+  destination = '/mnt/civics_db'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [http_service.concurrency]
+    type = 'connections'
+    hard_limit = 1000
+    soft_limit = 1000
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
