@@ -139,45 +139,44 @@ defmodule Civics.Data.Import do
     )
   end
 
-  def assessment_shapefiles(opts \\ []) do
-    download_path = Keyword.get(opts, :download_path, false)
-    gunzip = Keyword.get(opts, :gunzip, false)
-    file_path = Keyword.get(opts, :file_path, false)
+  def assessment_shapefiles(file_path) do
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      DELETE FROM assessment_shapefiles;
+      """
+    )
 
     assessments =
-      if download_path do
-        response =
-          Finch.build(:get, download_path)
-          |> Finch.request!(Civics.Finch)
-
-        response.body
-      else
-        File.read!(file_path)
-      end
-      |> Jason.decode!()
-      |> Map.fetch!("features")
-
-    assessments
-    |> Stream.filter(fn assessment ->
-      Map.fetch!(assessment, "geometry")
-    end)
-    |> Stream.map(fn assessment ->
+    File.stream!(file_path)
+    |> Stream.map(fn assessment_json ->
+      assessment = Jason.decode!(assessment_json)
       tax_key = get_in(assessment, ["properties", "Taxkey"])
-      geometry = Geo.JSON.decode!(Map.fetch!(assessment, "geometry"))
+      geometry = case Map.fetch!(assessment, "geometry") do
+        nil ->
+          nil
+        geo ->
+          Geo.JSON.decode!(geo)
+      end
 
       geometry =
         case geometry do
           %Geo.Polygon{} ->
-            %Geo.MultiPolygon{coordinates: [geometry.coordinates]}
+            %Geo.MultiPolygon{coordinates: [geometry.coordinates], srid: 4326}
 
           %Geo.MultiPolygon{} ->
-            geometry
+            %{geometry | srid: 4326}
+          nil ->
+            nil
         end
 
       %{
         tax_key: tax_key,
-        geom: %{geometry | srid: 4326}
+        geom: geometry
       }
+    end)
+    |> Stream.filter(fn assessment ->
+      Map.fetch!(assessment, :geom)
     end)
     |> Stream.chunk_every(200)
     |> Stream.each(fn assessments ->
