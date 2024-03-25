@@ -3,4 +3,8 @@ defmodule CivicsWeb.Helpers do
   def format_dollars(number) do
     Regex.replace(@number_comma_regex, "#{number}", ",")
   end
+
+  def format_float(number) do
+    :erlang.float_to_binary(number, decimals: 2)
+  end
 end

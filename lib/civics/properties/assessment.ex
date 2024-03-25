@@ -50,6 +50,7 @@ defmodule Civics.Properties.Assessment do
     field :year, :integer
     field :air_conditioning, :integer
     field :land_use_general, :string
+    field(:geom_point, Civics.EctoTypes.Geometry, virtual: true)
 
     timestamps(type: :utc_datetime)
   end

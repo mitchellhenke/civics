@@ -19,7 +19,7 @@ defmodule Civics.EctoTypes do
         :error ->
           :error
 
-        geo ->
+        {:ok, geo} ->
           {:ok, geo}
       end
     end
