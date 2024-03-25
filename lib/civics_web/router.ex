@@ -20,6 +20,7 @@ defmodule CivicsWeb.Router do
     get "/", PageController, :home
     live "/assessments", AssessmentLive.Index, :index
     live "/assessments/:id", AssessmentLive.Show, :show
+    live "/transit/nearby", TransitLive.Nearby, :nearby
   end
 
   # Other scopes may use custom stacks.

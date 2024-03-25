@@ -73,6 +73,8 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
       add :tax_key, :string
     end
 
+    create(index(:assessment_shapefiles, [:tax_key], unique: true))
+
     execute(
       """
       SELECT InitSpatialMetaData();
