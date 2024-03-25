@@ -10,7 +10,7 @@ defmodule CivicsWeb.TransitLive.Nearby do
   @impl true
   def handle_params(params, _uri, socket) do
     address_query = Map.get(params, "address_query", "")
-    radius_miles = Map.get(params, "radius_miles", "")
+    radius_miles = Map.get(params, "radius_miles", "0.5")
 
     socket =
       assign(socket, :address_query, address_query)

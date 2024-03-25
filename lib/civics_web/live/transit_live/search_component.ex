@@ -149,7 +149,7 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
 
     {:noreply,
      socket
-     |> push_patch(to: ~p"/transit/nearby?#{params}")
+     |> push_patch(to: ~p"/transit/nearby?#{params}", replace: true)
      |> assign(:address_query, value)}
   end
 
@@ -161,7 +161,7 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
 
     {:noreply,
      socket
-     |> push_patch(to: ~p"/transit/nearby?#{params}")
+     |> push_patch(to: ~p"/transit/nearby?#{params}", replace: true)
      |> assign(:radius_miles, value)}
   end
 
