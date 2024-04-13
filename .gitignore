@@ -40,3 +40,5 @@ npm-debug.log
 # Database files
 *.db
 *.db-*
+
+.DS_Store
