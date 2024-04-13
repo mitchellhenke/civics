@@ -118,6 +118,8 @@ defmodule Civics.Data.Import do
       """
       INSERT INTO assessments_fts (rowid, tax_key, full_address)
       SELECT a.id, a.tax_key,
+      SUBSTR(house_number_low, 0,LENGTH(house_number_low)) || ' ' ||
+      SUBSTR(house_number_low, 0,LENGTH(house_number_low) - 1) || '00' || ' ' ||
       house_number_low || ' ' || house_number_high || ' ' || coalesce(street_direction, '') || ' ' || coalesce(street, '') || ' ' || coalesce(street_type, '') || ' ' || coalesce(
       CASE street_type
       WHEN 'AV' THEN 'AVENUE AVE'
