@@ -9,7 +9,7 @@ defmodule Civics.Data do
       Path.join(["/mnt", "civics_db", "assessment_shapefiles.jsonl"])
     )
 
-    download_gtfs(Path.join(["/mnt", "civics_db"]))
+    Civics.Data.download_gtfs(Path.join(["/mnt", "civics_db"]))
 
     Civics.Data.Import.import_gtfs(Path.join(["/mnt", "civics_db", "google_transit"]))
   end

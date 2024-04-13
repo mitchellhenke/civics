@@ -3,7 +3,7 @@ defmodule CivicsWeb.TransitLive.Nearby do
 
   @impl true
   def mount(_params, _session, socket) do
-    socket = assign(socket, :page_title, "Find nearby bus routes")
+    socket = assign(socket, :page_title, "Search Nearby Bus Routes")
     {:ok, stream(socket, :assessments, [])}
   end
 
