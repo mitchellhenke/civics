@@ -16,7 +16,7 @@ defmodule Civics.Data do
 
   def download_gtfs(destination) do
     response =
-      Finch.build(:get, "http://kamino.mcts.org/gtfs/google_transit.zip")
+      Finch.build(:get, "https://kamino.mcts.org/gtfs/google_transit.zip")
       |> Finch.request!(Civics.Finch)
 
     File.write(Path.join([destination, "google_transit.zip"]), response.body)
