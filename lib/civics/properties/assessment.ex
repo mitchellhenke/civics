@@ -51,6 +51,8 @@ defmodule Civics.Properties.Assessment do
     field :air_conditioning, :integer
     field :land_use_general, :string
     field(:geom_point, Civics.EctoTypes.Geometry, virtual: true)
+    field(:latitude, :float, virtual: true)
+    field(:longitude, :float, virtual: true)
 
     timestamps(type: :utc_datetime)
   end
@@ -174,7 +176,7 @@ defmodule Civics.Properties.Assessment do
       end
 
     house_number =
-      if property.house_number_suffix do
+      if property.house_number_suffix != "" && !is_nil(property.house_number_suffix) do
         "#{house_number} #{property.house_number_suffix}"
       else
         "#{house_number}"

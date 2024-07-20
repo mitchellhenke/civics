@@ -38,12 +38,33 @@ defmodule Civics.Properties do
   def get_assessment!(id), do: Repo.get!(Assessment, id)
   def get_assessment_by_tax_key!(tax_key), do: Repo.get_by!(Assessment, tax_key: tax_key)
 
-  def search_assessments(address_query) do
+  def geocode(address_query, limit) do
+    formatted_query = format_query(address_query)
+
+    from(a in Assessment,
+      where: fragment("full_address LIKE ?", ^formatted_query),
+      join: af in AssessmentFts,
+      on: af.tax_key == a.tax_key,
+      join: as in AssessmentShapefile,
+      on: as.tax_key == a.tax_key,
+      limit: ^limit,
+      order_by: [asc: af.rank],
+      select: %{
+        a
+        | longitude: fragment("ST_X(?)", as.geom_point),
+          latitude: fragment("ST_Y(?)", as.geom_point)
+      }
+    )
+    |> Repo.all()
+  end
+
+  def search_assessments(address_query, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 100)
     formatted_query = format_query(address_query)
 
     query =
       from(a in Assessment,
-        limit: 100
+        limit: ^limit
       )
 
     if address_query == "" do
