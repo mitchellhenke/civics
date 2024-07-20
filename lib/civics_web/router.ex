@@ -24,9 +24,11 @@ defmodule CivicsWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", CivicsWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", CivicsWeb do
+    pipe_through :api
+    get "/geocode", PageController, :geocode
+    get "/assessments", PageController, :assessments
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:civics, :dev_routes) do

@@ -1,5 +1,6 @@
 defmodule Civics.Data.Import do
   alias Civics.Repo
+  alias Civics.Geo.Neighborhood
   alias Civics.Properties.{Assessment, AssessmentShapefile}
   alias Civics.Transit.{Feed, Route, CalendarDate, Stop, Trip, StopTime}
 
@@ -15,6 +16,20 @@ defmodule Civics.Data.Import do
   @mprop_download_url "https://data.milwaukee.gov/dataset/562ab824-48a5-42cd-b714-87e205e489ba/resource/0a2c7f31-cd15-4151-8222-09dd57d5f16d/download/mprop.csv"
 
   def assessments(download \\ false) do
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      DELETE FROM assessments;
+      """
+    )
+
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      DELETE FROM assessments_fts;
+      """
+    )
+
     assessments =
       if download do
         response =
@@ -257,7 +272,7 @@ defmodule Civics.Data.Import do
     |> Stream.run()
 
     earliest_date = Date.add(Date.utc_today(), -2)
-    latest_date = Date.add(Date.utc_today(), 11)
+    latest_date = Date.add(Date.utc_today(), 30)
 
     calendar_dates =
       File.read!(Path.join(folder, "calendar_dates.txt"))
@@ -536,6 +551,59 @@ defmodule Civics.Data.Import do
     #   from shapes s where s.shape_id = '23-DEC_66_0_11' limit 1;
     #   """
     # )
+  end
+
+  def neighborhoods(file_path) do
+    Ecto.Adapters.SQL.query!(
+      Repo,
+      """
+      DELETE FROM neighborhoods;
+      """
+    )
+
+    _neighborhoods =
+      File.stream!(file_path)
+      |> Stream.map(fn neighborhood_json ->
+        neighborhood = Jason.decode!(neighborhood_json)
+        name = get_in(neighborhood, ["properties", "name"])
+
+        geometry =
+          case Map.fetch!(neighborhood, "geometry") do
+            nil ->
+              nil
+
+            geo ->
+              Geo.JSON.decode!(geo)
+          end
+
+        geometry =
+          case geometry do
+            %Geo.Polygon{} ->
+              %Geo.MultiPolygon{coordinates: [geometry.coordinates], srid: 4326}
+
+            %Geo.MultiPolygon{} ->
+              %{geometry | srid: 4326}
+
+            nil ->
+              nil
+          end
+
+        %{
+          name: name,
+          geom: geometry
+        }
+      end)
+      |> Stream.filter(fn neighborhood ->
+        Map.fetch!(neighborhood, :geom)
+      end)
+      |> Stream.chunk_every(200)
+      |> Stream.each(fn neighborhood ->
+        {:ok, _} =
+          Ecto.Multi.new()
+          |> Ecto.Multi.insert_all(:insert_all, Neighborhood, neighborhood)
+          |> Repo.transaction()
+      end)
+      |> Stream.run()
   end
 
   defp convert_string_maybe_blank_to_date(""), do: nil

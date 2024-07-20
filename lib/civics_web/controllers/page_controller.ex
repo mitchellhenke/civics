@@ -6,4 +6,19 @@ defmodule CivicsWeb.PageController do
     # so skip the default app layout.
     render(conn, :home)
   end
+
+  def geocode(conn, params) do
+    address_search_query = params["q"] || ""
+
+    assessments = Civics.Properties.geocode(address_search_query)
+    render(conn, :index, assessments: assessments)
+  end
+
+  def assessments(conn, params) do
+    address_search_query = params["q"] || ""
+    limit = params["limit"] || ""
+
+    assessments = Civics.Properties.search_assessments(address_search_query, limit: limit)
+    render(conn, :index, assessments: assessments)
+  end
 end
