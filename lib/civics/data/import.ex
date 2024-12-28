@@ -64,7 +64,7 @@ defmodule Civics.Data.Import do
     |> Civics.WindowsNewLineCSV.parse_stream(skip_headers: false)
     |> Stream.map(fn values ->
       map =
-        List.zip([keys, values])
+        Enum.zip([keys, values])
         |> Enum.into(%{})
 
       %{
@@ -247,7 +247,7 @@ defmodule Civics.Data.Import do
     |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
     |> Stream.map(fn values ->
       map =
-        List.zip([keys, values])
+        Enum.zip([keys, values])
         |> Enum.into(%{})
 
       %{
@@ -292,7 +292,7 @@ defmodule Civics.Data.Import do
       |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
       |> Stream.map(fn values ->
         map =
-          List.zip([keys, values])
+          Enum.zip([keys, values])
           |> Enum.into(%{})
 
         date = Map.fetch!(map, "date")
@@ -345,7 +345,7 @@ defmodule Civics.Data.Import do
     |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
     |> Stream.map(fn values ->
       map =
-        List.zip([keys, values])
+        Enum.zip([keys, values])
         |> Enum.into(%{})
 
       %{
@@ -389,7 +389,7 @@ defmodule Civics.Data.Import do
     # |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
     # |> Stream.map(fn values ->
     #   map =
-    #     List.zip([keys, values])
+    #     Enum.zip([keys, values])
     #     |> Enum.into(%{})
 
     #   %{
@@ -426,7 +426,7 @@ defmodule Civics.Data.Import do
       |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
       |> Stream.map(fn values ->
         map =
-          List.zip([keys, values])
+          Enum.zip([keys, values])
           |> Enum.into(%{})
 
         # add :length_seconds, :integer
@@ -478,14 +478,14 @@ defmodule Civics.Data.Import do
     |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
     |> Stream.filter(fn values ->
       map =
-        List.zip([keys, values])
+        Enum.zip([keys, values])
         |> Enum.into(%{})
 
       Enum.count(Map.keys(map)) > 1
     end)
     |> Stream.map(fn values ->
       map =
-        List.zip([keys, values])
+        Enum.zip([keys, values])
         |> Enum.into(%{})
 
       [arrival_hours, arrival_minutes, arrival_seconds] =
