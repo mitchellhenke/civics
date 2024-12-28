@@ -16,7 +16,7 @@ defmodule Civics.EctoTypes do
 
     def load(data) when is_binary(data) do
       case Civics.Sqlite.decode(data) do
-        :error ->
+        {:error, _} ->
           :error
 
         {:ok, geo} ->
