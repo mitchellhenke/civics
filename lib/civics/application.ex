@@ -46,7 +46,7 @@ defmodule Civics.Application do
 
     def run(_arg) do
       if Application.get_env(:civics, :download_and_seed) do
-        Civics.Data.Import.assessments(true)
+        # Civics.Data.Import.assessments(true)
 
         Civics.Data.download_gtfs(Path.join(["/mnt", "civics_db"]))
         Civics.Data.Import.import_gtfs(Path.join(["/mnt", "civics_db", "google_transit"]))
