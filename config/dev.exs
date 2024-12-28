@@ -7,7 +7,7 @@ config :civics, Civics.Repo,
   stacktrace: true,
   load_extensions: [
     # DEV SPECIFIC mod_spatialite.dylib is macos only
-    "/opt/homebrew/Cellar/libspatialite/5.1.0/lib/mod_spatialite.dylib"
+    "/opt/homebrew/Cellar/libspatialite/5.1.0_1/lib/mod_spatialite.dylib"
   ],
   show_sensitive_data_on_connection_error: true
 
