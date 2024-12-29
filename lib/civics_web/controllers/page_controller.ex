@@ -10,7 +10,7 @@ defmodule CivicsWeb.PageController do
   def geocode(conn, params) do
     address_search_query = params["q"] || ""
 
-    assessments = Civics.Properties.geocode(address_search_query)
+    assessments = Civics.Properties.geocode(address_search_query, 10)
     render(conn, :index, assessments: assessments)
   end
 
