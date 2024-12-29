@@ -22,13 +22,13 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
         target={@myself}
         event="do-search-address"
         text_value={@address_query}
-        name="Address"
+        name="Address search"
       />
       <.radius_input
         target={@myself}
         event="do-search-radius"
         radius_value={@radius_miles}
-        name="Radius (miles)"
+        name="Maximum distance (miles)"
       />
       <.results routes={@routes} assessment={@assessment} />
     </div>
@@ -88,9 +88,9 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
 
   def results(assigns) do
     ~H"""
-    <.header :if={@assessment != nil} class="mt-4">
+    <.header2 :if={@assessment != nil} class="mt-4">
       Routes near <%= Properties.Assessment.address(@assessment) %>
-    </.header>
+    </.header2>
     <div :if={@routes == []}>
       No Results
     </div>

@@ -2,6 +2,23 @@
   Search For Nearby Bus Routes by Address
 </.header>
 
+<p class="my-2">
+  This tool allows you to search for the nearest bus routes for a given address. This is intended to be helpful for people that would like to provide information for nearby bus routes for their events, parties, trivia knowledge, and more.
+</p>
+
+<p class="my-2">
+  There are a couple limitations:
+</p>
+
+<.item_list>
+  <:item>
+    It only works for City of Milwaukee addresses
+  </:item>
+  <:item>
+    The address search can be a bit weird
+  </:item>
+</.item_list>
+
 <.live_component
   module={CivicsWeb.TransitLive.SearchComponent}
   address_query={@address_query}
