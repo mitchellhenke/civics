@@ -13,13 +13,6 @@ defmodule Civics.Release do
     end
   end
 
-  def import do
-    load_app()
-
-    {:ok, _pid} = Finch.start_link(name: Civics.Finch)
-    Civics.Data.download_and_import
-  end
-
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
