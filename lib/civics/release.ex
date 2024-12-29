@@ -16,6 +16,7 @@ defmodule Civics.Release do
   def import do
     load_app()
 
+    {:ok, _pid} = Finch.start_link(name: Civics.Finch)
     Civics.Data.download_and_import
   end
 
