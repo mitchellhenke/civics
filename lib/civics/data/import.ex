@@ -4,18 +4,7 @@ defmodule Civics.Data.Import do
   alias Civics.Properties.{Assessment, AssessmentShapefile}
   alias Civics.Transit.{Feed, Route, CalendarDate, Stop, Trip, StopTime}
 
-  NimbleCSV.define(Civics.WindowsNewLineCSV,
-    separator: ",",
-    escape: "\"",
-    line_separator: "\r",
-    moduledoc: """
-    A CSV parser that uses comma as separator and double-quotes as escape according to RFC4180.
-    """
-  )
-
-  @mprop_download_url "https://data.milwaukee.gov/dataset/562ab824-48a5-42cd-b714-87e205e489ba/resource/0a2c7f31-cd15-4151-8222-09dd57d5f16d/download/mprop.csv"
-
-  def assessments(download \\ false) do
+  def assessments(file_path) do
     Ecto.Adapters.SQL.query!(
       Repo,
       """
@@ -30,38 +19,15 @@ defmodule Civics.Data.Import do
       """
     )
 
-    assessments =
-      if download do
-        response =
-          Finch.build(:get, @mprop_download_url)
-          |> Finch.request!(Civics.Finch)
-
-        {"location", download} = List.keyfind(response.headers, "location", 0)
-
-        download_response =
-          Finch.build(:get, download)
-          |> Finch.request!(Civics.Finch)
-
-        download_response.body
-        |> String.trim()
-        |> String.split("\r")
-      else
-        File.read!(Path.join("data", "mprop.csv"))
-        |> String.trim()
-        |> String.split("\r")
-      end
-
     keys =
-      assessments
+      File.stream!(file_path)
+      |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
       |> Enum.take(1)
       |> hd()
-      |> String.trim()
-      |> Civics.WindowsNewLineCSV.parse_string(skip_headers: false)
-      |> hd()
 
-    assessments
+    File.stream!(file_path)
     |> Stream.drop(1)
-    |> Civics.WindowsNewLineCSV.parse_stream(skip_headers: false)
+    |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
     |> Stream.map(fn values ->
       map =
         Enum.zip([keys, values])

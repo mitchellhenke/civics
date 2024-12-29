@@ -31,6 +31,9 @@ config :civics, CivicsWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :civics, Civics.Mailer, adapter: Swoosh.Adapters.Local
 
+# Path for data downloads
+config :civics, download_path: "data/"
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
