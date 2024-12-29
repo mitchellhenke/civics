@@ -17,6 +17,7 @@ defmodule Civics.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: Civics.Finch},
       # Start a worker by calling: Civics.Worker.start_link(arg)
+      {Civics.Application.Worker, restart: :temporary},
       # {Civics.Worker, arg},
       # Start to serve requests, typically the last entry
       CivicsWeb.Endpoint
@@ -34,5 +35,26 @@ defmodule Civics.Application do
   def config_change(changed, _new, removed) do
     CivicsWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  defmodule Worker do
+    use Task
+
+    def start_link(arg) do
+      Task.start_link(__MODULE__, :run, [arg])
+    end
+
+    def run(_arg) do
+      if Application.get_env(:civics, :import_at_start) do
+        last_assessment = Civics.Properties.get_last_inserted_assessment()
+        now = DateTime.utc_now()
+        stale_date = DateTime.add(now, -3, :day)
+
+        if is_nil(last_assessment) ||
+             DateTime.compare(last_assessment.inserted_at, stale_date) == :lt do
+          Civics.Data.download_and_import()
+        end
+      end
+    end
   end
 end

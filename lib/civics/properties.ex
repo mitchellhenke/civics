@@ -38,6 +38,16 @@ defmodule Civics.Properties do
   def get_assessment!(id), do: Repo.get!(Assessment, id)
   def get_assessment_by_tax_key!(tax_key), do: Repo.get_by!(Assessment, tax_key: tax_key)
 
+  def get_last_inserted_assessment do
+    from(
+      a in Assessment,
+      order_by: [desc: a.inserted_at],
+      limit: 1,
+      select: %{inserted_at: a.inserted_at}
+    )
+    |> Repo.one()
+  end
+
   def geocode(address_query, limit) do
     formatted_query = format_query(address_query)
 
