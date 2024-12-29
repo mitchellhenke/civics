@@ -5,13 +5,23 @@ defmodule Civics.Data do
     # ./priv/download_shapefiles.sh
     # wireguard
     # scp data/assessment_shapefiles.jsonl root@\[IP\]:/mnt/civics_db
+    assessment_shapefile_path = Path.join([Application.fetch_env!(:civics, :download_path), "assessment_shapefiles.jsonl"])
+    neighborhood_path = Path.join([Application.fetch_env!(:civics, :download_path), "neighborhood_shapefiles.jsonl"])
     assessment_path = Path.join([Application.fetch_env!(:civics, :download_path), "mprop.csv"])
     Civics.Data.download_assessments(assessment_path)
     Civics.Data.Import.assessments(assessment_path)
 
-    Civics.Data.Import.assessment_shapefiles(
-      Path.join([Application.fetch_env!(:civics, :download_path), "assessment_shapefiles.jsonl"])
-    )
+    if File.exists?(assessment_shapefile_path) do
+      Civics.Data.Import.assessment_shapefiles(
+       assessment_shapefile_path
+      )
+    end
+
+    if File.exists?(neighborhood_path) do
+      Civics.Data.Import.neighborhoods(
+       neighborhood_path
+      )
+    end
 
     Civics.Data.download_gtfs(Application.fetch_env!(:civics, :download_path))
 
