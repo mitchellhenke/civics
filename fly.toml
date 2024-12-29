@@ -12,7 +12,7 @@ kill_signal = 'SIGTERM'
 [env]
   DATABASE_PATH = '/mnt/civics_db/civics_db.db'
   DOWNLOAD_PATH = '/mnt/civics_db/tmp'
-  PHX_HOST = 'civics.fly.dev'
+  PHX_HOST = 'civics.mitchellhenke.com'
   PORT = '8080'
 
 [mounts]
