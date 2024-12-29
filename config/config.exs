@@ -34,6 +34,9 @@ config :civics, Civics.Mailer, adapter: Swoosh.Adapters.Local
 # Path for data downloads
 config :civics, download_path: "data/"
 
+# Whether to import at application start
+config :civics, import_at_start: false
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

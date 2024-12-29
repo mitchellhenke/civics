@@ -10,6 +10,9 @@ config :civics, CivicsWeb.Endpoint, cache_static_manifest: "priv/static/cache_ma
 # Path for data downloads
 config :civics, download_path: Path.join(["/mnt", "civics_db"])
 
+# Whether to import at application start
+config :civics, import_at_start: true
+
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Civics.Finch
 
