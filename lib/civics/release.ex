@@ -13,6 +13,12 @@ defmodule Civics.Release do
     end
   end
 
+  def import do
+    load_app()
+
+    Civics.Data.download_and_import
+  end
+
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
