@@ -27,11 +27,34 @@ defmodule Civics.Data do
 
     {"location", location} = List.keyfind(response.headers, "location", 0)
 
-    download_response =
-      Finch.build(:get, location)
-      |> Finch.request!(Civics.Finch)
+    request = Finch.build(:get, location)
 
-    File.write!(file_path, String.replace(download_response.body, "\r", "\n"))
+    initial_path = "#{file_path}.1"
+    File.rm(initial_path)
+    File.rm(file_path)
+    file = File.open!(initial_path, [:write, :exclusive])
+
+    Finch.stream(request, Civics.Finch, nil, fn
+      {:status, status}, _acc ->
+        IO.inspect(status)
+
+      {:headers, headers}, _acc ->
+        IO.inspect(headers)
+
+      {:data, data}, _acc ->
+        IO.binwrite(file, data)
+    end)
+
+    File.close(file)
+
+    File.stream!(initial_path, [], 2048)
+    |> Stream.map(fn bytes ->
+      String.replace(bytes, "\r", "\n")
+    end)
+    |> Stream.into(File.stream!(file_path))
+    |> Stream.run()
+
+    File.rm(initial_path)
   end
 
   def download_gtfs(destination) do
