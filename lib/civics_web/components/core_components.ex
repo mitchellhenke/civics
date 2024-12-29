@@ -428,12 +428,33 @@ defmodule CivicsWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+        <h1 class="text-xl font-semibold leading-8 text-zinc-800">
           <%= render_slot(@inner_block) %>
         </h1>
         <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
           <%= render_slot(@subtitle) %>
         </p>
+      </div>
+      <div class="flex-none"><%= render_slot(@actions) %></div>
+    </header>
+    """
+  end
+
+  @doc """
+  Renders a second header with title.
+  """
+  attr :class, :string, default: nil
+
+  slot :inner_block, required: true
+  slot :actions
+
+  def header2(assigns) do
+    ~H"""
+    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
+      <div>
+        <h2 class="text-lg font-semibold leading-8 text-zinc-800">
+          <%= render_slot(@inner_block) %>
+        </h2>
       </div>
       <div class="flex-none"><%= render_slot(@actions) %></div>
     </header>
@@ -473,8 +494,8 @@ defmodule CivicsWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
+    <div>
+      <table class="mt-6 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal"><%= col[:label] %></th>
@@ -557,7 +578,7 @@ defmodule CivicsWeb.CoreComponents do
       </.item_list>
   """
   slot :item, required: true
-  attr :class, :string
+  attr :class, :string, default: nil
 
   def item_list(assigns) do
     ~H"""
