@@ -178,7 +178,7 @@ defmodule Civics.Data.Import do
     Ecto.Adapters.SQL.query!(
       Repo,
       """
-      update assessment_shapefiles SET geom_point = ST_Centroid(geom);
+      UPDATE assessment_shapefiles SET geom_point = ST_Centroid(geom);
       """
     )
   end
@@ -498,14 +498,14 @@ defmodule Civics.Data.Import do
     Ecto.Adapters.SQL.query!(
       Repo,
       """
-      update stops SET geom_point = MakePoint("stop_lon", "stop_lat", 4326);
+      UPDATE stops SET geom_point = MakePoint("stop_lon", "stop_lat", 4326);
       """
     )
 
     # Ecto.Adapters.SQL.query!(
     #   Repo,
     #   """
-    #   update shapes set geom_point = MakePoint(shape_pt_lon, shape_pt_lat, 4326)
+    #   UPDATE shapes SET geom_point = MakePoint(shape_pt_lon, shape_pt_lat, 4326)
     #   """
     # )
 
