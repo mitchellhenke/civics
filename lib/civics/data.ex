@@ -1,4 +1,6 @@
 defmodule Civics.Data do
+  require Logger
+
   @mprop_download_url "https://data.milwaukee.gov/dataset/562ab824-48a5-42cd-b714-87e205e489ba/resource/0a2c7f31-cd15-4151-8222-09dd57d5f16d/download/mprop.csv"
 
   def download_and_import do
@@ -18,22 +20,31 @@ defmodule Civics.Data do
       ])
 
     assessment_path = Path.join([Application.fetch_env!(:civics, :download_path), "mprop.csv"])
+    Logger.info("Downloading assessments")
     Civics.Data.download_assessments(assessment_path)
+    Logger.info("Importing assessments")
     Civics.Data.Import.assessments(assessment_path)
 
     if File.exists?(assessment_shapefile_path) do
+      Logger.info("Importing assessment shapefiles")
       Civics.Data.Import.assessment_shapefiles(assessment_shapefile_path)
     end
 
     if File.exists?(neighborhood_path) do
+      Logger.info("Importing neighbhorhood shapefiles")
       Civics.Data.Import.neighborhoods(neighborhood_path)
     end
 
+    Logger.info("Downloading GTFS")
     Civics.Data.download_gtfs(Application.fetch_env!(:civics, :download_path))
+
+    Logger.info("Importing GTFS")
 
     Civics.Data.Import.import_gtfs(
       Path.join([Application.fetch_env!(:civics, :download_path), "google_transit"])
     )
+
+    Logger.info("Finished importing")
   end
 
   def download_assessments(file_path) do

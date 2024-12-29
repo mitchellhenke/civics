@@ -1,4 +1,5 @@
 defmodule Civics.Data.Import do
+  require Logger
   alias Civics.Repo
   alias Civics.Geo.Neighborhood
   alias Civics.Properties.{Assessment, AssessmentShapefile}
@@ -9,14 +10,18 @@ defmodule Civics.Data.Import do
       Repo,
       """
       DELETE FROM assessments;
-      """
+      """,
+      [],
+      timeout: :infinity
     )
 
     Ecto.Adapters.SQL.query!(
       Repo,
       """
       DELETE FROM assessments_fts;
-      """
+      """,
+      [],
+      timeout: :infinity
     )
 
     keys =
@@ -90,9 +95,11 @@ defmodule Civics.Data.Import do
       {:ok, _} =
         Ecto.Multi.new()
         |> Ecto.Multi.insert_all(:insert_all, Assessment, assessments)
-        |> Repo.transaction()
+        |> Repo.transaction(timeout: :infinity)
     end)
     |> Stream.run()
+
+    Logger.info("Creating assessments full-text search")
 
     Ecto.Adapters.SQL.query!(
       Repo,
@@ -119,17 +126,25 @@ defmodule Civics.Data.Import do
       END
       , '')
       FROM assessments a
-      """
+      """,
+      [],
+      timeout: :infinity
     )
   end
 
   def assessment_shapefiles(file_path) do
+    Logger.info("Deleting existing shapefiles")
+
     Ecto.Adapters.SQL.query!(
       Repo,
       """
       DELETE FROM assessment_shapefiles;
-      """
+      """,
+      [],
+      timeout: :infinity
     )
+
+    Logger.info("Creating new shapefiles")
 
     _assessments =
       File.stream!(file_path)
@@ -166,21 +181,27 @@ defmodule Civics.Data.Import do
       |> Stream.filter(fn assessment ->
         Map.fetch!(assessment, :geom)
       end)
-      |> Stream.chunk_every(200)
+      |> Stream.chunk_every(100)
       |> Stream.each(fn assessments ->
         {:ok, _} =
           Ecto.Multi.new()
           |> Ecto.Multi.insert_all(:insert_all, AssessmentShapefile, assessments)
-          |> Repo.transaction()
+          |> Repo.transaction(timeout: :infinity)
       end)
       |> Stream.run()
+
+    Logger.info("Updating shapefiles")
 
     Ecto.Adapters.SQL.query!(
       Repo,
       """
       UPDATE assessment_shapefiles SET geom_point = ST_Centroid(geom);
-      """
+      """,
+      [],
+      timeout: :infinity
     )
+
+    Logger.info("Finished importing shapefiles")
   end
 
   def import_gtfs(folder \\ "./data/google_transit", date \\ Date.utc_today()) do
@@ -233,7 +254,7 @@ defmodule Civics.Data.Import do
       {:ok, _} =
         Ecto.Multi.new()
         |> Ecto.Multi.insert_all(:insert_all, Route, routes)
-        |> Repo.transaction()
+        |> Repo.transaction(timeout: :infinity)
     end)
     |> Stream.run()
 
@@ -282,7 +303,7 @@ defmodule Civics.Data.Import do
         {:ok, _} =
           Ecto.Multi.new()
           |> Ecto.Multi.insert_all(:insert_all, CalendarDate, calendar_dates)
-          |> Repo.transaction()
+          |> Repo.transaction(timeout: :infinity)
 
         calendar_dates
       end)
@@ -333,7 +354,7 @@ defmodule Civics.Data.Import do
       {:ok, _} =
         Ecto.Multi.new()
         |> Ecto.Multi.insert_all(:insert_all, Stop, stops)
-        |> Repo.transaction()
+        |> Repo.transaction(timeout: :infinity)
     end)
     |> Stream.run()
 
@@ -417,7 +438,7 @@ defmodule Civics.Data.Import do
         {:ok, _} =
           Ecto.Multi.new()
           |> Ecto.Multi.insert_all(:insert_all, Trip, trips)
-          |> Repo.transaction()
+          |> Repo.transaction(timeout: :infinity)
 
         trips
       end)
@@ -491,7 +512,7 @@ defmodule Civics.Data.Import do
       {:ok, _} =
         Ecto.Multi.new()
         |> Ecto.Multi.insert_all(:insert_all, StopTime, stop_times)
-        |> Repo.transaction()
+        |> Repo.transaction(timeout: :infinity)
     end)
     |> Stream.run()
 
@@ -499,7 +520,9 @@ defmodule Civics.Data.Import do
       Repo,
       """
       UPDATE stops SET geom_point = MakePoint("stop_lon", "stop_lat", 4326);
-      """
+      """,
+      [],
+      timeout: :infinity
     )
 
     # Ecto.Adapters.SQL.query!(
@@ -567,7 +590,7 @@ defmodule Civics.Data.Import do
         {:ok, _} =
           Ecto.Multi.new()
           |> Ecto.Multi.insert_all(:insert_all, Neighborhood, neighborhood)
-          |> Repo.transaction()
+          |> Repo.transaction(timeout: :infinity)
       end)
       |> Stream.run()
   end

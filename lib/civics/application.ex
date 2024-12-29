@@ -4,6 +4,7 @@ defmodule Civics.Application do
   @moduledoc false
 
   use Application
+  require Logger
 
   @impl true
   def start(_type, _args) do
@@ -52,6 +53,7 @@ defmodule Civics.Application do
 
         if is_nil(last_assessment) ||
              DateTime.compare(last_assessment.inserted_at, stale_date) == :lt do
+          Logger.info("Downloading and importing data")
           Civics.Data.download_and_import()
         end
       end
