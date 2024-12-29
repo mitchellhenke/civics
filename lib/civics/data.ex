@@ -10,7 +10,7 @@ defmodule Civics.Data do
     Civics.Data.Import.assessments(assessment_path)
 
     Civics.Data.Import.assessment_shapefiles(
-      Path.join(["/mnt", "civics_db", "assessment_shapefiles.jsonl"])
+      Path.join([Application.fetch_env!(:civics, :download_path), "assessment_shapefiles.jsonl"])
     )
 
     Civics.Data.download_gtfs(Application.fetch_env!(:civics, :download_path))
