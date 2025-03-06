@@ -15,7 +15,7 @@ defmodule Civics.Transit.Stop do
     field :location_type, :integer
     field :route_ids, :binary
     field :feed_id, :id
-    field(:geom_point, Civics.EctoTypes.Geometry)
+    field(:geom_point, GeoSpatialite.Geometry)
   end
 
   @doc false

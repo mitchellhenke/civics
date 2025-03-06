@@ -4,7 +4,7 @@ defmodule Civics.Geo.Neighborhood do
 
   schema "neighborhoods" do
     field(:name, :string)
-    field(:geom, Civics.EctoTypes.Geometry)
+    field(:geom, GeoSpatialite.Geometry)
   end
 
   @doc false

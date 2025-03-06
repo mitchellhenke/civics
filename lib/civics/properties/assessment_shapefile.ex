@@ -4,8 +4,8 @@ defmodule Civics.Properties.AssessmentShapefile do
 
   schema "assessment_shapefiles" do
     field(:tax_key, :string)
-    field(:geom_point, Civics.EctoTypes.Geometry)
-    field(:geom, Civics.EctoTypes.Geometry)
+    field(:geom_point, GeoSpatialite.Geometry)
+    field(:geom, GeoSpatialite.Geometry)
   end
 
   @doc false

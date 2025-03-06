@@ -59,7 +59,8 @@ defmodule Civics.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:nimble_csv, "~> 1.2"},
-      {:nimble_parsec, "~> 1.4"}
+      {:nimble_parsec, "~> 1.4"},
+      {:geo_spatialite, "~> 0.2.0"}
     ]
   end
 

@@ -8,7 +8,10 @@ defmodule Civics.Repo.Migrations.CreateNeighborhoods do
 
     execute(
       "SELECT AddGeometryColumn('neighborhoods', 'geom', 4326, 'MULTIPOLYGON');",
-      ""
+      """
+      SELECT DiscardGeometryColumn('neighborhoods', 'geom');
+      ALTER TABLE neighborhoods DROP COLUMN geom;
+      """
     )
   end
 end

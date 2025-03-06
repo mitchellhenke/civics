@@ -78,8 +78,6 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
     execute(
       """
       SELECT InitSpatialMetaData();
-      """,
-      """
       """
     )
 
@@ -88,6 +86,8 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
       SELECT AddGeometryColumn('assessment_shapefiles', 'geom', 4326, 'MULTIPOLYGON');
       """,
       """
+      SELECT DiscardGeometryColumn('assessment_shapefiles', 'geom');
+      ALTER TABLE assessment_shapefiles DROP COLUMN geom;
       """
     )
 
@@ -96,6 +96,8 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
       SELECT AddGeometryColumn('assessment_shapefiles', 'geom_point', 4326, 'POINT');
       """,
       """
+      SELECT DiscardGeometryColumn('assessment_shapefiles', 'geom_point');
+      ALTER TABLE assessment_shapefiles DROP COLUMN geom_point;
       """
     )
 
@@ -104,6 +106,8 @@ defmodule Civics.Repo.Migrations.CreateAssessments do
       SELECT CreateSpatialIndex('assessment_shapefiles', 'geom_point');
       """,
       """
+      SELECT DisableSpatialIndex('assessment_shapefiles', 'geom_point');
+      DROP INDEX idx_assessment_shapefiles_geom_point;
       """
     )
   end

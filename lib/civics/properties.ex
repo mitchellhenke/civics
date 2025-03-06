@@ -230,7 +230,7 @@ defmodule Civics.Properties do
         |> Enum.into(%{})
 
       if result.geom_point do
-        Map.put(result, :geom_point, Civics.Sqlite.decode!(result.geom_point))
+        Map.put(result, :geom_point, GeoSpatialite.decode!(result.geom_point))
       else
         result
       end

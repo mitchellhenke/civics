@@ -50,7 +50,7 @@ defmodule Civics.Properties.Assessment do
     field :year, :integer
     field :air_conditioning, :integer
     field :land_use_general, :string
-    field(:geom_point, Civics.EctoTypes.Geometry, virtual: true)
+    field(:geom_point, GeoSpatialite.Geometry, virtual: true)
     field(:latitude, :float, virtual: true)
     field(:longitude, :float, virtual: true)
 

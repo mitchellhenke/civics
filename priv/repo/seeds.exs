@@ -11,8 +11,5 @@
 # and so on) as they will fail if something goes wrong.
 
 Logger.configure(level: :warning)
-Civics.Data.Import.assessments()
-
-Civics.Data.Import.assessment_shapefiles(Path.join("data", "assessment_shapefiles.jsonl"))
-
+Civics.Data.download_and_import()
 Logger.configure(level: :debug)

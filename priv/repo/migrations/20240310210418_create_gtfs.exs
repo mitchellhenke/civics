@@ -88,17 +88,26 @@ defmodule Civics.Repo.Migrations.CreateFeeds do
 
     execute(
       "SELECT AddGeometryColumn('stops', 'geom_point', 4326, 'POINT');",
-      ""
+      """
+      SELECT DiscardGeometryColumn('stops', 'geom_point');
+      ALTER TABLE stops DROP COLUMN geom_point;
+      """
     )
 
     execute(
       "SELECT AddGeometryColumn('shapes', 'geom_point', 4326, 'POINT');",
-      ""
+      """
+      SELECT DiscardGeometryColumn('shapes', 'geom_point');
+      ALTER TABLE shapes DROP COLUMN geom_point;
+      """
     )
 
     execute(
       "SELECT AddGeometryColumn('shape_geometries', 'geom_line', 4326, 'LINESTRING');",
-      ""
+      """
+      SELECT DiscardGeometryColumn('shape_geometries', 'geom_line');
+      ALTER TABLE shape_geometries DROP COLUMN geom_line;
+      """
     )
 
     execute(
@@ -106,6 +115,8 @@ defmodule Civics.Repo.Migrations.CreateFeeds do
       SELECT CreateSpatialIndex('stops', 'geom_point');
       """,
       """
+      SELECT DisableSpatialIndex('stops', 'geom_point');
+      DROP INDEX idx_stops_geom_point;
       """
     )
   end
