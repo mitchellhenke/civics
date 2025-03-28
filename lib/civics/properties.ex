@@ -167,24 +167,6 @@ defmodule Civics.Properties do
     date = DateTime.to_date(date_time)
     interval = time_to_seconds(date_time)
 
-    """
-      select DISTINCT(t.route_id), s.stop_name, s.geom_point, s.stop_id, round(111000 * (abs(ST_X(s.geom_point) - #{latitude}) + abs(ST_Y(s.geom_point) - #{longitude}))) as manhattan_meters, round(111000 * min(Distance(s.geom_point, MakePoint(#{latitude}, #{longitude}, #{point.srid})))) as distance_meters
-        from stops s
-      JOIN stop_times st on st.stop_id = s.stop_id
-      JOIN trips t on t.trip_id = st.trip_id
-      JOIN calendar_dates cd on cd.service_id = t.service_id
-      WHERE cd.date = '#{date}' AND st.arrival_time > #{interval} AND PtDistWithin(s.geom_point, MakePoint(#{latitude}, #{longitude}, #{point.srid}), #{distance_meters}) AND s.rowid IN (
-            SELECT rowid
-            FROM SpatialIndex
-            WHERE f_table_name = 'stops'
-            and f_geometry_column = 'geom_point'
-            AND search_frame = ST_Expand(MakePoint(#{latitude}, #{longitude}, #{point.srid}), #{distance_meters / 111_000})
-      )
-        group by t.route_id
-        order by distance_meters asc;
-    """
-    |> IO.puts()
-
     {:ok, result} =
       Repo.query(
         """
