@@ -13,6 +13,8 @@ config :civics, download_path: Path.join(["/mnt", "civics_db"])
 # Whether to import at application start
 config :civics, import_at_start: true
 
+config :exqlite, force_build: true
+
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Civics.Finch
 
