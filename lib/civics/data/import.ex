@@ -47,7 +47,7 @@ defmodule Civics.Data.Import do
         street_direction: Map.fetch!(map, "SDIR"),
         street: Map.fetch!(map, "STREET"),
         street_type: Map.fetch!(map, "STTYPE"),
-        tax_rate_cd: String.to_integer(Map.fetch!(map, "TAX_RATE_CD")),
+        tax_rate_cd: convert_string_maybe_blank_to_integer(Map.fetch!(map, "TAX_RATE_CD")),
         year: String.to_integer(Map.fetch!(map, "YR_ASSMT")),
         year_built: String.to_integer(Map.fetch!(map, "YR_BUILT")),
         assessed_land: String.to_integer(Map.fetch!(map, "C_A_LAND")),
