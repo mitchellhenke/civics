@@ -28,6 +28,7 @@ defmodule CivicsWeb.Router do
     pipe_through :api
     get "/geocode", PageController, :geocode
     get "/assessments", PageController, :assessments
+    get "/neighborhood_random", PageController, :neighborhood_random
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

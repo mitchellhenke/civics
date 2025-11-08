@@ -21,4 +21,9 @@ defmodule CivicsWeb.PageController do
     assessments = Civics.Properties.search_assessments(address_search_query, limit: limit)
     render(conn, :index, assessments: assessments)
   end
+
+  def neighborhood_random(conn, _params) do
+    neighborhood = Civics.Geo.Neighborhood.random()
+    render(conn, :show_neighborhood, neighborhood: neighborhood)
+  end
 end

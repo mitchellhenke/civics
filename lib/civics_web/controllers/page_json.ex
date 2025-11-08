@@ -15,6 +15,12 @@ defmodule CivicsWeb.PageJSON do
     %{data: data(assessment)}
   end
 
+  def show_neighborhood(%{neighborhood: neighborhood}) do
+    %{
+      name: neighborhood.name
+    }
+  end
+
   defp data(assessment) do
     %{
       address: Civics.Properties.Assessment.address(assessment),

@@ -1,6 +1,7 @@
 defmodule Civics.Geo.Neighborhood do
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query, warn: false
 
   schema "neighborhoods" do
     field(:name, :string)
@@ -17,6 +18,14 @@ defmodule Civics.Geo.Neighborhood do
     |> validate_required([
       :name
     ])
+  end
+
+  def random() do
+    from(s in Civics.Geo.Neighborhood,
+      order_by: fragment("random()"),
+      limit: 1
+    )
+    |> Civics.Repo.one()
   end
 
   # def list(x_min, y_min, x_max, y_max, zoning) do
