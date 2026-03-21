@@ -5,6 +5,8 @@ defmodule Civics.Data.Import do
   alias Civics.Properties.{Assessment, AssessmentShapefile}
   alias Civics.Transit.{Feed, Route, CalendarDate, Stop, Trip, StopTime}
 
+  @batch_size 250
+
   def assessments(file_path) do
     Ecto.Adapters.SQL.query!(
       Repo,
@@ -90,13 +92,16 @@ defmodule Civics.Data.Import do
         updated_at: DateTime.truncate(DateTime.utc_now(), :second)
       }
     end)
-    |> Stream.chunk_every(500)
-    |> Task.async_stream(fn assessments ->
-      {:ok, _} =
-        Ecto.Multi.new()
-        |> Ecto.Multi.insert_all(:insert_all, Assessment, assessments)
-        |> Repo.transaction(timeout: :infinity)
-    end)
+    |> Stream.chunk_every(@batch_size)
+    |> Task.async_stream(
+      fn assessments ->
+        {:ok, _} =
+          Ecto.Multi.new()
+          |> Ecto.Multi.insert_all(:insert_all, Assessment, assessments)
+          |> Repo.transaction(timeout: :infinity)
+      end,
+      timeout: :infinity
+    )
     |> Stream.run()
 
     Logger.info("Creating assessments full-text search")
@@ -205,6 +210,8 @@ defmodule Civics.Data.Import do
   end
 
   def import_gtfs(folder \\ "./data/google_transit", date \\ Date.utc_today()) do
+    Logger.info("Truncating GTFS tables")
+
     ["stops", "routes", "calendar_dates", "shapes", "trips", "stop_times"]
     |> Enum.each(fn table ->
       Ecto.Adapters.SQL.query!(Repo, "DELETE FROM #{table};")
@@ -229,6 +236,8 @@ defmodule Civics.Data.Import do
       |> NimbleCSV.RFC4180.parse_string(skip_headers: false)
       |> hd()
 
+    Logger.info("Inserting GTFS routes")
+
     routes
     |> Stream.drop(1)
     |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
@@ -249,7 +258,7 @@ defmodule Civics.Data.Import do
         feed_id: feed_id
       }
     end)
-    |> Stream.chunk_every(500)
+    |> Stream.chunk_every(@batch_size)
     |> Task.async_stream(fn routes ->
       {:ok, _} =
         Ecto.Multi.new()
@@ -273,6 +282,8 @@ defmodule Civics.Data.Import do
       |> String.trim()
       |> NimbleCSV.RFC4180.parse_string(skip_headers: false)
       |> hd()
+
+    Logger.info("Inserting GTFS calendar dates")
 
     calendar_dates =
       Stream.drop(calendar_dates, 1)
@@ -298,7 +309,7 @@ defmodule Civics.Data.Import do
         Date.compare(calendar_date.date, latest_date) == :lt &&
           Date.compare(calendar_date.date, earliest_date) == :gt
       end)
-      |> Stream.chunk_every(500)
+      |> Stream.chunk_every(@batch_size)
       |> Task.async_stream(fn calendar_dates ->
         {:ok, _} =
           Ecto.Multi.new()
@@ -327,6 +338,8 @@ defmodule Civics.Data.Import do
       |> NimbleCSV.RFC4180.parse_string(skip_headers: false)
       |> hd()
 
+    Logger.info("Inserting GTFS stops")
+
     stops
     |> Stream.drop(1)
     |> NimbleCSV.RFC4180.parse_stream(skip_headers: false)
@@ -349,7 +362,7 @@ defmodule Civics.Data.Import do
         feed_id: feed_id
       }
     end)
-    |> Stream.chunk_every(500)
+    |> Stream.chunk_every(@batch_size)
     |> Stream.each(fn stops ->
       {:ok, _} =
         Ecto.Multi.new()
@@ -407,6 +420,8 @@ defmodule Civics.Data.Import do
       |> NimbleCSV.RFC4180.parse_string(skip_headers: false)
       |> hd()
 
+    Logger.info("Inserting GTFS trips")
+
     trips =
       File.stream!(Path.join(folder, "trips.txt"))
       |> Stream.drop(1)
@@ -433,15 +448,18 @@ defmodule Civics.Data.Import do
       |> Stream.filter(fn trip ->
         MapSet.member?(service_ids, trip.service_id)
       end)
-      |> Stream.chunk_every(500)
-      |> Task.async_stream(fn trips ->
-        {:ok, _} =
-          Ecto.Multi.new()
-          |> Ecto.Multi.insert_all(:insert_all, Trip, trips)
-          |> Repo.transaction(timeout: :infinity)
+      |> Stream.chunk_every(@batch_size)
+      |> Task.async_stream(
+        fn trips ->
+          {:ok, _} =
+            Ecto.Multi.new()
+            |> Ecto.Multi.insert_all(:insert_all, Trip, trips)
+            |> Repo.transaction(timeout: :infinity)
 
-        trips
-      end)
+          trips
+        end,
+        timeout: :infinity
+      )
       |> Enum.map(&elem(&1, 1))
       |> List.flatten()
 
@@ -459,6 +477,8 @@ defmodule Civics.Data.Import do
       stop_times
       |> NimbleCSV.RFC4180.parse_string(skip_headers: false)
       |> hd()
+
+    Logger.info("Inserting GTFS stop_times")
 
     File.stream!(Path.join(folder, "stop_times.txt"))
     |> Stream.drop(1)
@@ -507,14 +527,19 @@ defmodule Civics.Data.Import do
     |> Stream.filter(fn stop_time ->
       MapSet.member?(trip_ids, stop_time.trip_id)
     end)
-    |> Stream.chunk_every(500)
-    |> Task.async_stream(fn stop_times ->
-      {:ok, _} =
-        Ecto.Multi.new()
-        |> Ecto.Multi.insert_all(:insert_all, StopTime, stop_times)
-        |> Repo.transaction(timeout: :infinity)
-    end)
+    |> Stream.chunk_every(@batch_size)
+    |> Task.async_stream(
+      fn stop_times ->
+        {:ok, _} =
+          Ecto.Multi.new()
+          |> Ecto.Multi.insert_all(:insert_all, StopTime, stop_times)
+          |> Repo.transaction(timeout: :infinity)
+      end,
+      timeout: :infinity
+    )
     |> Stream.run()
+
+    Logger.info("Updating GTFS stops geom_point")
 
     Ecto.Adapters.SQL.query!(
       Repo,
