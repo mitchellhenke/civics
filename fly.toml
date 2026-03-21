@@ -4,7 +4,7 @@
 #
 
 app = 'civics'
-primary_region = 'ord'
+primary_region = 'iad'
 kill_signal = 'SIGTERM'
 
 [build]
