@@ -1,5 +1,5 @@
 #!/bin/sh
-curl -L -o data/shapefiles.zip https://data.milwaukee.gov/dataset/3e238aee-5a21-4e2f-8ae7-803440c5d88a/resource/39a759e9-c5fb-4f58-98be-493fa2bf8ab5/download/parcelpolygontax2023.zip
+curl -L -o data/shapefiles.zip https://data.milwaukee.gov/dataset/3e238aee-5a21-4e2f-8ae7-803440c5d88a/resource/a8880aaa-19b6-4d7b-90ce-6282688e8e98/download/parcelpolygontax2025.zip
 mkdir -p data/shapefiles
 unzip -o -d data/shapefiles data/shapefiles.zip
 cd data/shapefiles

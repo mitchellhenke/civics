@@ -6,10 +6,8 @@ defmodule Civics.Data do
   def download_and_import do
     # ./priv/download_shapefiles.sh
     # ./priv/download_neighborhoods.sh
-    # wireguard
-    # install openssh-client on the instance
-    # scp data/assessment_shapefiles.jsonl root@\[IP\]:/mnt/civics_db
-    # scp data/neighborhood_shapefiles.jsonl root@\[IP\]:/mnt/civics_db
+    # fly sftp put data/assessment_shapefiles.jsonl /mnt/civics_db/assessment_shapefiles.jsonl --verbose
+    # fly sftp put data/neighborhood_shapefiles.jsonl /mnt/civics_db/neighborhood_shapefiles.jsonl --verbose
     assessment_shapefile_path =
       Path.join([Application.fetch_env!(:civics, :download_path), "assessment_shapefiles.jsonl"])
 
