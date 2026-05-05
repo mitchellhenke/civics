@@ -94,7 +94,7 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
     <div :if={@routes == []}>
       No Results
     </div>
-    <.table id="routes" row_id={&"#{&1.route_id}"} rows={@routes}>
+    <.keyed_table id="routes" row_id={&"#{&1.route_id}"} rows={@routes}>
       <:col :let={route} label="Route">
         {route.route_id}
       </:col>
@@ -104,7 +104,7 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
       <:col :let={route} label="Distance (miles)">
         {format_float(route.distance_meters / 1609)}
       </:col>
-    </.table>
+    </.keyed_table>
     """
   end
 

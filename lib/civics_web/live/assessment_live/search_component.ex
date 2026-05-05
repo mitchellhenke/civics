@@ -57,7 +57,7 @@ defmodule CivicsWeb.AssessmentLive.SearchComponent do
     <div :if={@assessments == []} id="option-none">
       No Results
     </div>
-    <.table id="assessments" row_id={&"#{&1.id}"} rows={@assessments}>
+    <.keyed_table id="assessments" row_id={&"#{&1.id}"} rows={@assessments}>
       <:col :let={assessment} label="Address">
         <.good_link navigate={~p"/assessments/#{assessment.tax_key}"}>
           {Civics.Properties.Assessment.address(assessment)}
@@ -81,7 +81,7 @@ defmodule CivicsWeb.AssessmentLive.SearchComponent do
       <:col :let={property} label="Assessed Value" class="hidden md:table-cell">
         ${format_dollars(property.assessed_total)}
       </:col>
-    </.table>
+    </.keyed_table>
     """
   end
 
