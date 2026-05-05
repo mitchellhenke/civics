@@ -60,26 +60,26 @@ defmodule CivicsWeb.AssessmentLive.SearchComponent do
     <.table id="assessments" row_id={&"#{&1.id}"} rows={@assessments}>
       <:col :let={assessment} label="Address">
         <.good_link navigate={~p"/assessments/#{assessment.tax_key}"}>
-          <%= Civics.Properties.Assessment.address(assessment) %>
+          {Civics.Properties.Assessment.address(assessment)}
         </.good_link>
       </:col>
       <:col :let={assessment} label="Bedrooms" class="hidden sm:table-cell">
-        <%= assessment.number_of_bedrooms %>
+        {assessment.number_of_bedrooms}
       </:col>
       <:col :let={assessment} label="Bathrooms" class="hidden sm:table-cell">
-        <%= Properties.Assessment.bathroom_count(assessment) %>
+        {Properties.Assessment.bathroom_count(assessment)}
       </:col>
       <:col :let={assessment} label="Lot Area" class="hidden sm:table-cell">
-        <%= assessment.lot_area %>
+        {assessment.lot_area}
       </:col>
       <:col :let={assessment} label="Building Area" class="hidden sm:table-cell">
-        <%= assessment.building_area %>
+        {assessment.building_area}
       </:col>
       <:col :let={assessment} label="Zoning" class="hidden sm:table-cell">
-        <%= assessment.zoning %>
+        {assessment.zoning}
       </:col>
       <:col :let={property} label="Assessed Value" class="hidden md:table-cell">
-        $<%= format_dollars(property.assessed_total) %>
+        ${format_dollars(property.assessed_total)}
       </:col>
     </.table>
     """

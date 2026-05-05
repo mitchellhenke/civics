@@ -89,20 +89,20 @@ defmodule CivicsWeb.TransitLive.SearchComponent do
   def results(assigns) do
     ~H"""
     <.header2 :if={@assessment != nil} class="mt-4">
-      Routes near <%= Properties.Assessment.address(@assessment) %>
+      Routes near {Properties.Assessment.address(@assessment)}
     </.header2>
     <div :if={@routes == []}>
       No Results
     </div>
     <.table id="routes" row_id={&"#{&1.route_id}"} rows={@routes}>
       <:col :let={route} label="Route">
-        <%= route.route_id %>
+        {route.route_id}
       </:col>
       <:col :let={route} label="Stop">
-        <%= route.stop_name %>
+        {route.stop_name}
       </:col>
       <:col :let={route} label="Distance (miles)">
-        <%= format_float(route.distance_meters / 1609) %>
+        {format_float(route.distance_meters / 1609)}
       </:col>
     </.table>
     """

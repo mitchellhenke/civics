@@ -234,15 +234,15 @@ defmodule Civics.Properties do
   defp first_monday_in_calendar_dates do
     today = Date.utc_today()
 
-    first_monday = from(x in Civics.Transit.CalendarDate,
-      distinct: true,
-      where: fragment("strftime('%w', ?) = '1' AND ? >= ?", x.date, x.date, ^today),
-      select: x.date,
-      order_by: [asc: x.date],
-      limit: 1
-    )
-    |> Repo.one
-
+    first_monday =
+      from(x in Civics.Transit.CalendarDate,
+        distinct: true,
+        where: fragment("strftime('%w', ?) = '1' AND ? >= ?", x.date, x.date, ^today),
+        select: x.date,
+        order_by: [asc: x.date],
+        limit: 1
+      )
+      |> Repo.one()
 
     if first_monday do
       DateTime.new!(first_monday, ~T[00:00:00])
