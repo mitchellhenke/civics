@@ -10,6 +10,6 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-Logger.configure(level: :warning)
+# Logger.configure(level: :warning)
 Civics.Data.download_and_import()
-Logger.configure(level: :debug)
+# Logger.configure(level: :debug)

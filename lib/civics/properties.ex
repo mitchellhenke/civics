@@ -77,23 +77,38 @@ defmodule Civics.Properties do
         limit: ^limit
       )
 
-    if address_query == "" do
-      from(a in query,
-        order_by: [desc: a.assessed_total]
-      )
-    else
-      from(a in query,
-        where: fragment("full_address LIKE ?", ^formatted_query),
-        join: af in AssessmentFts,
-        on: af.tax_key == a.tax_key,
-        select: a,
-        order_by: [asc: af.rank]
-      )
-    end
+    query =
+      if address_query == "" do
+        from(a in query,
+          order_by: [desc: a.assessed_total]
+        )
+      else
+        from(a in query,
+          where: fragment("full_address LIKE ?", ^formatted_query),
+          join: af in AssessmentFts,
+          on: af.tax_key == a.tax_key,
+          select: a,
+          order_by: [asc: af.rank]
+        )
+      end
+
+    query
+    |> filter_min(opts)
     |> Repo.all()
   end
 
-  def assessments_within(point, radius_in_m) do
+  @doc """
+  Returns assessments within `radius_in_m` meters of the assessment with the
+  given `tax_key`. Accepts the same `opts` as `assessments_within/3`.
+  """
+  def assessments_near(tax_key, radius_in_m, opts \\ []) do
+    case assessment_point(tax_key) do
+      nil -> []
+      point -> assessments_within(point, radius_in_m, opts)
+    end
+  end
+
+  def assessments_within(point, radius_in_m, opts \\ []) do
     point = point || %Geo.Point{coordinates: {-87.9072378, 43.0380655}, srid: 4326}
     {lng, lat} = point.coordinates
 
@@ -131,7 +146,36 @@ defmodule Civics.Properties do
         limit: 100
       )
 
-    Repo.all(query)
+    query
+    |> filter_min(opts)
+    |> Repo.all()
+  end
+
+  defp filter_min(query, opts) do
+    query
+    |> filter_min_field(:number_units, Keyword.get(opts, :min_units))
+    |> filter_min_field(:number_stories, Keyword.get(opts, :min_stories))
+  end
+
+  defp filter_min_field(query, _field, nil), do: query
+
+  defp filter_min_field(query, field, min) do
+    from(a in query, where: field(a, ^field) >= ^min)
+  end
+
+  defp assessment_point(tax_key) do
+    from(s in AssessmentShapefile,
+      where: s.tax_key == ^tax_key,
+      select: %{
+        lng: fragment("ST_X(?)", s.geom_point),
+        lat: fragment("ST_Y(?)", s.geom_point)
+      }
+    )
+    |> Repo.one()
+    |> case do
+      nil -> nil
+      %{lng: lng, lat: lat} -> %Geo.Point{coordinates: {lng, lat}, srid: 4326}
+    end
   end
 
   def search_assessments_with_point(address_query) do

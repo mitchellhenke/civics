@@ -7,4 +7,10 @@ defmodule CivicsWeb.Helpers do
   def format_float(number) do
     :erlang.float_to_binary(number, decimals: 2)
   end
+
+  def format_int(nil), do: ""
+
+  def format_int(number) do
+    Regex.replace(@number_comma_regex, "#{round(number)}", ",")
+  end
 end
